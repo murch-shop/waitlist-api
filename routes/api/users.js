@@ -23,15 +23,15 @@ router.get('/', (req, res) => {
         .then(users => res.json(users))
 });
 
-// @route   GET api/users/:id
+// @route   POST api/users/status
 // @desc    Get user's waitlist information
 // @access  Public
-router.get('/status', (req, res) => {
+router.post('/status', (req, res) => {
     axios.post("https://getwaitlist.com/api/v1/users/status", {
         api_key: getWaitlistApi,
         email: req.body.email
     }).then(
-        res => res.json(res.data)
+        info => res.json(info.data)
     ).catch(
         err => console.log(err)
     )
@@ -47,48 +47,48 @@ router.post('/', (req, res) => {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         email: req.body.email,
-        content_creator_url: req.body.url,
+        // content_creator_url: req.body.url,
         referral_link: req.body.referral_link
     }).then(
-        info => res.json(info)
+        info => res.json(info.data)
     ).catch(
         err => console.log(err)
     )
     
-    // Send Dynamic Template Email from Sendgrid
-    sgMail.setApiKey(sendgridApi)
-    const msg = {
-        from: 'murch.info@gmail.com',
-        template_id: sendgridId,
-        personalizations: [{
-            to: { email: req.body.email },
-            dynamic_template_data: {
-                first_name: req.body.first_name
-            }
-        }]
-    }
+    // // Send Dynamic Template Email from Sendgrid
+    // sgMail.setApiKey(sendgridApi)
+    // const msg = {
+    //     from: 'murch.info@gmail.com',
+    //     template_id: sendgridId,
+    //     personalizations: [{
+    //         to: { email: req.body.email },
+    //         dynamic_template_data: {
+    //             first_name: req.body.first_name
+    //         }
+    //     }]
+    // }
 
-    sgMail
-        .send(msg)
-        .then(() => {
-            console.log('Email sent')
-        })
-        .catch((err) => {
-            console.error(err)
-        })
+    // sgMail
+    //     .send(msg)
+    //     .then(() => {
+    //         console.log('Email sent')
+    //     })
+    //     .catch((err) => {
+    //         console.error(err)
+    //     })
 
     // Save to MongoDB Database
-    const newUser = new User({
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        email: req.body.email,
-        url: req.body.url
-    })
+    // const newUser = new User({
+    //     first_name: req.body.first_name,
+    //     last_name: req.body.last_name,
+    //     email: req.body.email,
+    //     url: req.body.url
+    // })
 
-    newUser
-        .save()
-        .then(user => console.log(user))
-        .catch(err => console.log(err))
+    // newUser
+    //     .save()
+    //     .then(user => console.log(user))
+    //     .catch(err => console.log(err))
 });
 
 // @route   DELETE api/users/:id
