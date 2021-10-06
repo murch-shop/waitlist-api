@@ -1,5 +1,8 @@
 const express = require("express")
 const mongoose = require("mongoose");
+
+const users = require("./routes/api/users");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -14,6 +17,9 @@ mongoose
     .connect(db)
     .then(() => console.log("Database connected..."))
     .catch((err) => console.log(err))
+
+// Routes
+app.use('/api/users', users);
 
 app.listen(
     PORT,
