@@ -5,11 +5,20 @@ const router = express.Router();
 // DEPENDENCIES
 const axios = require('axios');
 const sgMail = require('@sendgrid/mail')
+const airtable = require('airtable');
 
-// Keys and Ids
-const getWaitlistApi = process.env.GET_WAITLIST_API_KEY || "L6CUFR"
+// KEYS AND IDS
+const getWaitlistApi = process.env.GET_WAITLIST_API_KEY || "L6CUFR" 
 const sendgridApi = process.env.SENDGRID_API_KEY || "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"
 const sendgridId = process.env.SENDGRID_TEMPLATE_ID || "d-d9790e6a872b42aca7bb738f16ecae6b"
+const airtableApi = process.env.AIRTABLE_API_KEY || "keyFJLBT7qHUa6flc"
+
+// CONFIGURE DEPENDENCIES
+airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: airtableApi
+});
+const base = airtable.base('appTRDdyfkb3mmSYF');
 
 // User Model
 const User = require("../../models/User");
@@ -55,40 +64,60 @@ router.post('/', (req, res) => {
         err => console.log(err)
     )
     
-    // // Send Dynamic Template Email from Sendgrid
-    // sgMail.setApiKey(sendgridApi)
-    // const msg = {
-    //     from: 'murch.info@gmail.com',
-    //     template_id: sendgridId,
-    //     personalizations: [{
-    //         to: { email: req.body.email },
-    //         dynamic_template_data: {
-    //             first_name: req.body.first_name
-    //         }
-    //     }]
-    // }
+    // Send Dynamic Template Email from Sendgrid
+    sgMail.setApiKey(sendgridApi)
+    const msg = {
+        from: 'murch.info@gmail.com',
+        template_id: sendgridId,
+        personalizations: [{
+            to: { email: req.body.email },
+            dynamic_template_data: {
+                first_name: req.body.first_name
+            }
+        }]
+    }
 
-    // sgMail
-    //     .send(msg)
-    //     .then(() => {
-    //         console.log('Email sent')
-    //     })
-    //     .catch((err) => {
-    //         console.error(err)
-    //     })
+    sgMail
+        .send(msg)
+        .then(() => {
+            console.log('Email sent')
+        })
+        .catch((err) => {
+            console.error(err)
+        })
+
+    // Save to Airtable
+    base('Waitlist').create([
+        {
+            "fields": {
+                "last_name": req.body.last_name,
+                "first_name": req.body.first_name,
+                "email": req.body.email,
+                "content_creator_url": req.body.url
+            }
+        }
+    ], function(err, records) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        records.forEach(function(record) {
+            console.log(record.getId());
+        });
+    });
 
     // Save to MongoDB Database
-    // const newUser = new User({
-    //     first_name: req.body.first_name,
-    //     last_name: req.body.last_name,
-    //     email: req.body.email,
-    //     url: req.body.url
-    // })
+    const newUser = new User({
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email: req.body.email,
+        url: req.body.url
+    })
 
-    // newUser
-    //     .save()
-    //     .then(user => console.log(user))
-    //     .catch(err => console.log(err))
+    newUser
+        .save()
+        .then(user => console.log(user))
+        .catch(err => console.log(err))
 });
 
 // @route   DELETE api/users/:id
