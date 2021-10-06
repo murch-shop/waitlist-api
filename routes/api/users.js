@@ -8,10 +8,10 @@ const sgMail = require('@sendgrid/mail')
 const airtable = require('airtable');
 
 // KEYS AND IDS
-const getWaitlistApi = process.env.GET_WAITLIST_API_KEY
-const sendgridApi = process.env.SENDGRID_API_KEY
-const sendgridId = process.env.SENDGRID_TEMPLATE_ID
-const airtableApi = process.env.AIRTABLE_API_KEY
+const getWaitlistApi = process.env.GET_WAITLIST_API_KEY || "EAYIW2"
+const sendgridApi = process.env.SENDGRID_API_KEY || "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"
+const sendgridId = process.env.SENDGRID_TEMPLATE_ID || "d-d9790e6a872b42aca7bb738f16ecae6b"
+const airtableApi = process.env.AIRTABLE_API_KEY || "keyFJLBT7qHUa6flc"
 
 // CONFIGURE DEPENDENCIES
 airtable.configure({
