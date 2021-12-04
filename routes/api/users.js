@@ -77,10 +77,11 @@ router.post('/', (req, res) => {
         }]
     }
 
+    var emailSent = false;
     sgMail
         .send(msg)
         .then(() => {
-            console.log('Email sent')
+            emailSent = true;
         })
         .catch((err) => {
             console.error(err)
@@ -93,7 +94,9 @@ router.post('/', (req, res) => {
                 "last_name": req.body.last_name,
                 "first_name": req.body.first_name,
                 "email": req.body.email,
-                "content_creator_url": req.body.url
+                "community_page_url": req.body.url,
+                "contact_person_position": req.body.position,
+                "email_sent": emailSent
             }
         }
     ], function(err, records) {
@@ -111,7 +114,8 @@ router.post('/', (req, res) => {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         email: req.body.email,
-        url: req.body.url
+        url: req.body.url,
+        position: req.body.position,
     })
 
     newUser
